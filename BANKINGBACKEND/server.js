@@ -11,7 +11,7 @@ const connectDB = require('./src/config/database');
 
 const {
   generalLimiter,
-} = require('./src/middleware/rateLimiter');
+} = require('./src/middleware/ratelimiter');
 
 const {
   errorHandler,
