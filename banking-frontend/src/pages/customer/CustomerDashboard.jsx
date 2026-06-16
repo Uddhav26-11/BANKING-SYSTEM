@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import API from "../api/axios";
+import API from "../../api/axios";
 
-export default function Profile() {
-  const [user, setUser] = useState(null);
+export default function EmployeeProfile() {
+  const [profile, setProfile] =
+    useState(null);
 
   useEffect(() => {
     fetchProfile();
@@ -14,7 +15,9 @@ export default function Profile() {
         "/users/profile"
       );
 
-      setUser(res.data.data.user);
+      setProfile(
+        res.data.data.user
+      );
     } catch (err) {
       alert(
         err.response?.data?.message ||
@@ -23,31 +26,37 @@ export default function Profile() {
     }
   };
 
-  if (!user) return <p>Loading...</p>;
+  if (!profile) {
+    return (
+      <div className="page-container">
+        Loading...
+      </div>
+    );
+  }
 
   return (
     <div className="page-container">
-      <div className="card">
-        <h2>Profile</h2>
+      <h1>My Profile</h1>
 
+      <div className="card">
         <p>
           <strong>Name:</strong>{" "}
-          {user.fullName}
+          {profile.fullName}
         </p>
 
         <p>
           <strong>Email:</strong>{" "}
-          {user.email}
+          {profile.email}
         </p>
 
         <p>
           <strong>Role:</strong>{" "}
-          {user.role}
+          {profile.role}
         </p>
 
         <p>
           <strong>Status:</strong>{" "}
-          {user.isActive
+          {profile.isActive
             ? "Active"
             : "Inactive"}
         </p>

@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
-import API from "../api/axios";
+import API from "../../api/axios";
 
-export default function Transactions() {
+export default function MyTransactions() {
   const [transactions, setTransactions] =
     useState([]);
+
+  const [loading, setLoading] =
+    useState(true);
 
   useEffect(() => {
     fetchTransactions();
@@ -16,20 +19,29 @@ export default function Transactions() {
       );
 
       setTransactions(
-        res.data.data.transactions ||
-          []
+        res.data.data.transactions || []
       );
     } catch (err) {
       alert(
         err.response?.data?.message ||
         "Failed to load transactions"
       );
+    } finally {
+      setLoading(false);
     }
   };
 
+  if (loading) {
+    return (
+      <div className="page-container">
+        Loading...
+      </div>
+    );
+  }
+
   return (
     <div className="page-container">
-      <h1>Transactions</h1>
+      <h1>My Transactions</h1>
 
       <table>
         <thead>
@@ -46,9 +58,13 @@ export default function Transactions() {
             <tr key={txn._id}>
               <td>{txn.type}</td>
 
-              <td>₹{txn.amount}</td>
+              <td>
+                ₹{txn.amount}
+              </td>
 
-              <td>{txn.status}</td>
+              <td>
+                {txn.status}
+              </td>
 
               <td>
                 {new Date(

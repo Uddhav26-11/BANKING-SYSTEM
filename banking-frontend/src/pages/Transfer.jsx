@@ -2,72 +2,101 @@ import { useState } from "react";
 import API from "../api/axios";
 
 export default function Transfer() {
-  const [form, setForm] = useState({
-    fromAccount: "",
-    toAccount: "",
-    amount: "",
-  });
+  const [form, setForm] =
+    useState({
+      fromAccountNumber: "",
+      toAccountNumber: "",
+      amount: "",
+      description: "",
+    });
 
-  const [msg, setMsg] = useState("");
+  const handleChange = (e) => {
+    setForm({
+      ...form,
+      [e.target.name]:
+        e.target.value,
+    });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      await API.post("/transactions/transfer", {
-        fromAccount: form.fromAccount,
-        toAccount: form.toAccount,
-        amount: Number(form.amount),
-      });
+      const res = await API.post(
+        "/transactions/transfer",
+        {
+          ...form,
+          amount: Number(
+            form.amount
+          ),
+        }
+      );
 
-      setMsg("Transfer successful!");
+      alert(res.data.message);
 
       setForm({
-        fromAccount: "",
-        toAccount: "",
+        fromAccountNumber: "",
+        toAccountNumber: "",
         amount: "",
+        description: "",
       });
     } catch (err) {
-      setMsg(err.response?.data?.message || "Error");
+      alert(
+        err.response?.data?.message ||
+          "Transfer failed"
+      );
     }
   };
 
   return (
-    <div className="page">
-      <h2>Transfer Money</h2>
+    <div className="auth-page">
+      <div className="auth-card">
+        <h2>Transfer</h2>
 
-      {msg && <p>{msg}</p>}
+        <form onSubmit={handleSubmit}>
+          <input
+            name="fromAccountNumber"
+            placeholder="From Account"
+            value={
+              form.fromAccountNumber
+            }
+            onChange={handleChange}
+            required
+          />
 
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="From Account No."
-          value={form.fromAccount}
-          onChange={(e) =>
-            setForm({ ...form, fromAccount: e.target.value })
-          }
-        />
+          <input
+            name="toAccountNumber"
+            placeholder="To Account"
+            value={
+              form.toAccountNumber
+            }
+            onChange={handleChange}
+            required
+          />
 
-        <input
-          type="text"
-          placeholder="To Account No."
-          value={form.toAccount}
-          onChange={(e) =>
-            setForm({ ...form, toAccount: e.target.value })
-          }
-        />
+          <input
+            type="number"
+            name="amount"
+            placeholder="Amount"
+            value={form.amount}
+            onChange={handleChange}
+            required
+          />
 
-        <input
-          type="number"
-          placeholder="Amount"
-          value={form.amount}
-          onChange={(e) =>
-            setForm({ ...form, amount: e.target.value })
-          }
-        />
+          <input
+            name="description"
+            placeholder="Description"
+            value={
+              form.description
+            }
+            onChange={handleChange}
+          />
 
-        <button type="submit">Transfer</button>
-      </form>
+          <button type="submit">
+            Transfer
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

@@ -1,96 +1,85 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import API from "../api/axios";
+import toast from "react-hot-toast";
 
 export default function Withdraw() {
-  const [accounts, setAccounts] = useState([]);
   const [form, setForm] = useState({
     accountNumber: "",
     amount: "",
+    description: "",
   });
-  const [msg, setMsg] = useState("");
 
-  useEffect(() => {
-    const fetchAccounts = async () => {
-      try {
-        const res = await API.get("/accounts");
-        setAccounts(res.data.data.accounts || []);
-      } catch (err) {
-        setMsg(
-          err.response?.data?.message ||
-          "Failed to load accounts"
-        );
-      }
-    };
-
-    fetchAccounts();
-  }, []);
+  const handleChange = (e) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      await API.post("/transactions/withdraw", {
-        accountNumber: form.accountNumber,
-        amount: Number(form.amount),
-      });
+      const res = await API.post(
+        "/transactions/withdraw",
+        {
+          ...form,
+          amount: Number(form.amount),
+        }
+      );
 
-      setMsg("Withdrawal successful!");
+      toast.success(
+        `${res.data.message}\nNew Balance: ₹${res.data.data.newBalance}`
+      );
 
       setForm({
         accountNumber: "",
         amount: "",
+        description: "",
       });
     } catch (err) {
-      setMsg(err.response?.data?.message || "Error");
+      toast.error(
+        err.response?.data?.message ||
+        "Withdrawal failed"
+      );
     }
   };
 
   return (
-    <div className="page">
-      <h2>Withdraw Money</h2>
+    <div className="auth-page">
+      <div className="auth-card">
+        <h2>Withdraw Money</h2>
 
-      {msg && <p>{msg}</p>}
+        <form onSubmit={handleSubmit}>
+          <input
+            name="accountNumber"
+            placeholder="Account Number"
+            value={form.accountNumber}
+            onChange={handleChange}
+            required
+          />
 
-      <form onSubmit={handleSubmit}>
-        <select
-          value={form.accountNumber}
-          onChange={(e) =>
-            setForm({
-              ...form,
-              accountNumber: e.target.value,
-            })
-          }
-          required
-        >
-          <option value="">Select Account</option>
+          <input
+            type="number"
+            name="amount"
+            placeholder="Amount"
+            value={form.amount}
+            onChange={handleChange}
+            required
+          />
 
-          {accounts.map((a) => (
-            <option
-              key={a._id}
-              value={a.accountNumber}
-            >
-              {a.accountNumber} — ₹{a.balance}
-            </option>
-          ))}
-        </select>
+          <input
+            name="description"
+            placeholder="Description (Optional)"
+            value={form.description}
+            onChange={handleChange}
+          />
 
-        <input
-          type="number"
-          placeholder="Amount"
-          value={form.amount}
-          onChange={(e) =>
-            setForm({
-              ...form,
-              amount: e.target.value,
-            })
-          }
-          required
-        />
-
-        <button type="submit">
-          Withdraw
-        </button>
-      </form>
+          <button type="submit">
+            Withdraw
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

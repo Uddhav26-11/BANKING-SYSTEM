@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import API from "../api/axios";
 import { useAuth } from "../context/AuthContext";
 
 export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const { role } = useParams();
 
   const [form, setForm] = useState({
     email: "",
@@ -26,17 +27,24 @@ export default function Login() {
     setError("");
 
     try {
-      const res = await API.post("/auth/login", form);
+      const res = await API.post("/auth/login", {
+        ...form,
+        role,
+      });
 
-      login(
-        res.data.data.user,
-        res.data.data.token
-      );
+      const user = res.data.data.user;
+      const token = res.data.data.token;
 
-      navigate("/dashboard");
+      login(user, token);
+
+      if (user.role === "manager") {
+        navigate("/manager");
+      } else if (user.role === "employee") {
+        navigate("/employee");
+      } else {
+        navigate("/customer");
+      }
     } catch (err) {
-      console.error(err);
-
       setError(
         err.response?.data?.message ||
         "Login failed"
@@ -46,37 +54,45 @@ export default function Login() {
 
   return (
     <div className="auth-page">
-      <h2>Sign In</h2>
+      <div className="auth-card">
+        <h2>
+          {role
+            ? `${role.toUpperCase()} Sign In`
+            : "Sign In"}
+        </h2>
 
-      {error && <p className="error">{error}</p>}
+        <p className="login-subtitle">
+          Access your secure banking portal
+        </p>
 
-      <form onSubmit={handleSubmit}>
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={form.email}
-          onChange={handleChange}
-          required
-        />
+        {error && (
+          <p className="error">{error}</p>
+        )}
 
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={form.password}
-          onChange={handleChange}
-          required
-        />
+        <form onSubmit={handleSubmit}>
+          <input
+            type="email"
+            name="email"
+            placeholder="Enter Email Address"
+            value={form.email}
+            onChange={handleChange}
+            required
+          />
 
-        <button type="submit">
-          Login
-        </button>
-      </form>
+          <input
+            type="password"
+            name="password"
+            placeholder="Enter Password"
+            value={form.password}
+            onChange={handleChange}
+            required
+          />
 
-      <p>
-        No account? <Link to="/register">Register</Link>
-      </p>
+          <button type="submit">
+            Login
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
