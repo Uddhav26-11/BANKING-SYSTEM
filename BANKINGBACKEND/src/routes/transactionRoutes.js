@@ -11,7 +11,7 @@ const {
 } = require('../controllers/transactionController');
 
 const { protect, authorize } = require('../middleware/auth');
-const { transactionLimiter } = require('../middleware/rateLimiter');
+const { transactionLimiter } = require('../middleware/ratelimiter');
 
 /*
 =================================
