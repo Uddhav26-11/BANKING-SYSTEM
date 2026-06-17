@@ -1,65 +1,36 @@
-import { useEffect, useState } from "react";
-import API from "../../api/axios";
-
-export default function EmployeeProfile() {
-  const [profile, setProfile] =
-    useState(null);
-
-  useEffect(() => {
-    fetchProfile();
-  }, []);
-
-  const fetchProfile = async () => {
-    try {
-      const res = await API.get(
-        "/users/profile"
-      );
-
-      setProfile(
-        res.data.data.user
-      );
-    } catch (err) {
-      alert(
-        err.response?.data?.message ||
-        "Failed to load profile"
-      );
-    }
-  };
-
-  if (!profile) {
-    return (
-      <div className="page-container">
-        Loading...
-      </div>
-    );
-  }
-
+export default function CustomerDashboard() {
   return (
-    <div className="page-container">
-      <h1>My Profile</h1>
-
-      <div className="card">
-        <p>
-          <strong>Name:</strong>{" "}
-          {profile.fullName}
-        </p>
+    <div className="dashboard-home">
+      <div className="welcome-card">
+        <h1>👋 Welcome to BANDHAN BANK</h1>
 
         <p>
-          <strong>Email:</strong>{" "}
-          {profile.email}
+          Access your accounts, monitor transactions,
+          and enjoy secure digital banking.
         </p>
 
-        <p>
-          <strong>Role:</strong>{" "}
-          {profile.role}
-        </p>
+        <div className="welcome-info">
+          <div className="info-box">
+            <h3>🏦 My Accounts</h3>
+            <p>
+              View all your account details anytime.
+            </p>
+          </div>
 
-        <p>
-          <strong>Status:</strong>{" "}
-          {profile.isActive
-            ? "Active"
-            : "Inactive"}
-        </p>
+          <div className="info-box">
+            <h3>📜 Transactions</h3>
+            <p>
+              Track your complete transaction history.
+            </p>
+          </div>
+
+          <div className="info-box">
+            <h3>🔐 Secure Banking</h3>
+            <p>
+              Your data and money are protected with us.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

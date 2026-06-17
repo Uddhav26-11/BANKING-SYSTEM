@@ -18,19 +18,29 @@ const userSchema = new mongoose.Schema(
       unique: true,
       lowercase: true,
       trim: true,
-      validate: [validator.isEmail, 'Please provide a valid email'],
+      validate: [
+        validator.isEmail,
+        'Please provide a valid email',
+      ],
     },
 
     password: {
       type: String,
       required: [true, 'Password is required'],
-      minlength: [8, 'Password must be at least 8 characters'],
+      minlength: [
+        8,
+        'Password must be at least 8 characters',
+      ],
       select: false,
     },
 
     role: {
       type: String,
-      enum: ['manager', 'employee', 'customer'],
+      enum: [
+        'manager',
+        'employee',
+        'customer',
+      ],
       default: 'customer',
     },
 
@@ -42,9 +52,11 @@ const userSchema = new mongoose.Schema(
       validate: {
         validator: function (value) {
           if (!value) return true;
+
           return /^\d{12}$/.test(value);
         },
-        message: 'Aadhaar number must be 12 digits',
+        message:
+          'Aadhaar number must be 12 digits',
       },
     },
 
@@ -67,27 +79,65 @@ const userSchema = new mongoose.Schema(
     lastLogin: {
       type: Date,
     },
+
+    /*
+    =================================
+    OTP FIELDS FOR 2FA
+    =================================
+    */
+
+    otp: {
+      type: String,
+      default: null,
+    },
+
+    otpExpires: {
+      type: Date,
+      default: null,
+    },
   },
   {
     timestamps: true,
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true },
+
+    toJSON: {
+      virtuals: true,
+    },
+
+    toObject: {
+      virtuals: true,
+    },
   }
 );
 
-/* Virtual populate for accounts */
+/*
+=================================
+Virtual populate for accounts
+=================================
+*/
+
 userSchema.virtual('accounts', {
   ref: 'Account',
+
   localField: '_id',
+
   foreignField: 'userId',
 });
 
-/* Hash password before saving */
+/*
+=================================
+Hash password before saving
+=================================
+*/
+
 userSchema.pre('save', async function () {
-  if (!this.isModified('password')) return;
+  if (!this.isModified('password')) {
+    return;
+  }
 
   const saltRounds =
-    parseInt(process.env.BCRYPT_SALT_ROUNDS) || 12;
+    parseInt(
+      process.env.BCRYPT_SALT_ROUNDS
+    ) || 12;
 
   this.password = await bcrypt.hash(
     this.password,
@@ -95,7 +145,12 @@ userSchema.pre('save', async function () {
   );
 });
 
-/* Compare password */
+/*
+=================================
+Compare password
+=================================
+*/
+
 userSchema.methods.comparePassword =
   async function (candidatePassword) {
     return await bcrypt.compare(
@@ -104,14 +159,25 @@ userSchema.methods.comparePassword =
     );
   };
 
-/* Remove sensitive fields */
-userSchema.methods.toJSON = function () {
-  const user = this.toObject();
+/*
+=================================
+Remove sensitive fields
+=================================
+*/
 
-  delete user.password;
-  delete user.__v;
+userSchema.methods.toJSON =
+  function () {
+    const user = this.toObject();
 
-  return user;
-};
+    delete user.password;
+    delete user.otp;
+    delete user.otpExpires;
+    delete user.__v;
 
-module.exports = mongoose.model('User', userSchema);
+    return user;
+  };
+
+module.exports = mongoose.model(
+  'User',
+  userSchema
+);

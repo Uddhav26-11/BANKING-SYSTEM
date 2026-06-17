@@ -1,12 +1,13 @@
 import {
-  Link,
   useNavigate,
   useLocation,
 } from "react-router-dom";
 
 import { useAuth } from "../context/AuthContext";
 
-export default function Navbar() {
+export default function Navbar({
+  toggleSidebar,
+}) {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -30,73 +31,40 @@ export default function Navbar() {
   return (
     <nav className="navbar">
       <div className="navbar-left">
-        <h1>BANDHAN BANK</h1>
 
-        <p>Aapka Bharosa, Hamara Vaada</p>
+        {user && (
+          <button
+            className="menu-toggle"
+            onClick={toggleSidebar}
+          >
+            ☰
+          </button>
+        )}
+
+        <div>
+          {user ? (
+            <>
+              <h1>Welcome</h1>
+
+              <p>
+                Manage your banking operations securely
+              </p>
+            </>
+          ) : (
+            <>
+              <h1>BANDHAN BANK</h1>
+
+              <p>
+                Aapka Bharosa, Hamara Vaada
+              </p>
+            </>
+          )}
+        </div>
       </div>
 
       <div className="navbar-right">
         {user ? (
           <>
-            {/* MANAGER */}
-            {user.role === "manager" && (
-              <>
-                <Link to="/manager">
-                  Dashboard
-                </Link>
-
-                <Link to="/manager/employees">
-                  Employees
-                </Link>
-
-                <Link to="/manager/customers">
-                  Customers
-                </Link>
-
-                <Link to="/manager/bank-summary">
-                  Bank Summary
-                </Link>
-              </>
-            )}
-
-            {/* EMPLOYEE */}
-            {user.role === "employee" && (
-              <>
-                <Link to="/employee">
-                  Dashboard
-                </Link>
-
-                <Link to="/employee/customers">
-                  Customers
-                </Link>
-
-                <Link to="/employee/profile">
-                  Profile
-                </Link>
-              </>
-            )}
-
-            {/* CUSTOMER */}
-            {user.role === "customer" && (
-              <>
-                <Link to="/customer">
-                  Dashboard
-                </Link>
-
-                <Link to="/customer/accounts">
-                  Accounts
-                </Link>
-
-                <Link to="/customer/transactions">
-                  Transactions
-                </Link>
-
-                <Link to="/customer/profile">
-                  Profile
-                </Link>
-              </>
-            )}
-
             {!hideBackButton && (
               <button
                 className="btn"

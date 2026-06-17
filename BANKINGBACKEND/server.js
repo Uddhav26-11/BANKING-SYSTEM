@@ -1,3 +1,5 @@
+console.log("🚀 SERVER FILE LOADED");
+
 process.on('uncaughtException', (err) => {
   console.error('UNCAUGHT:', err.stack);
 });
@@ -18,15 +20,22 @@ const {
   notFound,
 } = require('./src/middleware/errorHandler');
 
-// Existing Routes
+/*
+=================================
+ROUTES
+=================================
+*/
+
 const authRoutes = require('./src/routes/authRoutes');
 const userRoutes = require('./src/routes/userRoutes');
 const accountRoutes = require('./src/routes/accountRoutes');
 const transactionRoutes = require('./src/routes/transactionRoutes');
 
-// NEW Routes
 const managerRoutes = require('./src/routes/managerRoutes');
 const employeeRoutes = require('./src/routes/employeeRoutes');
+
+console.log("🔥 Manager Routes Imported");
+console.log("🔥 Employee Routes Imported");
 
 /*
 =================================
@@ -106,7 +115,7 @@ app.use(
 
 /*
 =================================
-NEW MODULES
+MANAGER ROUTES
 =================================
 */
 
@@ -114,6 +123,12 @@ app.use(
   '/api/manager',
   managerRoutes
 );
+
+/*
+=================================
+EMPLOYEE ROUTES
+=================================
+*/
 
 app.use(
   '/api/employee',
@@ -125,6 +140,7 @@ app.use(
 404
 =================================
 */
+
 app.use(notFound);
 
 /*
@@ -132,6 +148,7 @@ app.use(notFound);
 Global Error Handler
 =================================
 */
+
 app.use(errorHandler);
 
 /*
@@ -139,6 +156,7 @@ app.use(errorHandler);
 Start Server
 =================================
 */
+
 const PORT =
   process.env.PORT || 5000;
 
@@ -160,6 +178,7 @@ const server = app.listen(
 Unhandled Promise Rejections
 =================================
 */
+
 process.on(
   'unhandledRejection',
   (err) => {

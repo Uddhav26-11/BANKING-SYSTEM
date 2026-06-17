@@ -1,52 +1,36 @@
-import { Link } from "react-router-dom";
-
 export default function EmployeeDashboard() {
   return (
-    <div className="page-container">
-      <h1>👨‍💼Employee Dashboard</h1>
+    <div className="dashboard-home">
+      <div className="welcome-card">
+        <h1>👨‍💻 Welcome to BANDHAN BANK</h1>
 
-      <div className="dashboard-cards">
+        <p>
+          Manage customer services and daily banking
+          operations efficiently through the sidebar.
+        </p>
 
-        <Link
-          to="/employee/create-customer"
-          className="card"
-        >
-          <h2>👤Create Customer</h2>
-          <p>Open a new customer account</p>
-        </Link>
+        <div className="welcome-info">
+          <div className="info-box">
+            <h3>👥 Customer Management</h3>
+            <p>
+              Access and manage customer details quickly.
+            </p>
+          </div>
 
-        <Link
-          to="/employee/customers"
-          className="card"
-        >
-          <h2>👥 Customer List</h2>
-          <p>View all customers</p>
-        </Link>
+          <div className="info-box">
+            <h3>⚡ Daily Operations</h3>
+            <p>
+              Perform banking tasks smoothly and efficiently.
+            </p>
+          </div>
 
-        <Link
-          to="/employee/profile"
-          className="card"
-        >
-          <h2>👨‍💼My Profile</h2>
-          <p>View your details</p>
-        </Link>
-
-        <Link
-          to="/employee/deposit"
-          className="card"
-        >
-          <h2>💰Deposit</h2>
-          <p>Deposit money into customer accounts</p>
-        </Link>
-
-        <Link
-          to="/employee/withdraw"
-          className="card"
-        >
-          <h2>💸 Withdraw</h2>
-          <p>Withdraw money from customer accounts</p>
-        </Link>
-
+          <div className="info-box">
+            <h3>🤝 Customer Support</h3>
+            <p>
+              Provide a better banking experience to customers.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

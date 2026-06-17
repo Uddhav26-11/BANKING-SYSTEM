@@ -60,11 +60,106 @@ const createEmployee = async (req, res, next) => {
 
 /*
 =================================
+UPDATE EMPLOYEE
+PUT /api/manager/employees/:id
+=================================
+*/
+const updateEmployee = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    const { fullName, email } =
+      req.body;
+
+    const employee =
+      await User.findOne({
+        _id: req.params.id,
+        role: 'employee',
+      });
+
+    if (!employee) {
+      return apiResponse(
+        res,
+        404,
+        'Employee not found.'
+      );
+    }
+
+    employee.fullName =
+      fullName || employee.fullName;
+
+    employee.email =
+      email || employee.email;
+
+    await employee.save();
+
+    return apiResponse(
+      res,
+      200,
+      'Employee updated successfully.',
+      { employee }
+    );
+  } catch (error) {
+    next(error);
+  }
+};
+
+/*
+=================================
+ACTIVATE / DEACTIVATE EMPLOYEE
+PATCH /api/manager/employees/:id/status
+=================================
+*/
+const toggleEmployeeStatus =
+  async (req, res, next) => {
+    try {
+      const employee =
+        await User.findOne({
+          _id: req.params.id,
+          role: 'employee',
+        });
+
+      if (!employee) {
+        return apiResponse(
+          res,
+          404,
+          'Employee not found.'
+        );
+      }
+
+      employee.isActive =
+        !employee.isActive;
+
+      await employee.save();
+
+      return apiResponse(
+        res,
+        200,
+        `Employee ${
+          employee.isActive
+            ? 'activated'
+            : 'deactivated'
+        } successfully.`,
+        { employee }
+      );
+    } catch (error) {
+      next(error);
+    }
+  };
+
+/*
+=================================
 CREATE CUSTOMER
 POST /api/manager/create-customer
 =================================
 */
-const createCustomer = async (req, res, next) => {
+const createCustomer = async (
+  req,
+  res,
+  next
+) => {
   try {
     const {
       fullName,
@@ -89,9 +184,10 @@ const createCustomer = async (req, res, next) => {
       );
     }
 
-    const existingEmail = await User.findOne({
-      email: email.toLowerCase(),
-    });
+    const existingEmail =
+      await User.findOne({
+        email: email.toLowerCase(),
+      });
 
     if (existingEmail) {
       return apiResponse(
@@ -101,9 +197,10 @@ const createCustomer = async (req, res, next) => {
       );
     }
 
-    const existingAadhaar = await User.findOne({
-      aadhaarNumber,
-    });
+    const existingAadhaar =
+      await User.findOne({
+        aadhaarNumber,
+      });
 
     if (existingAadhaar) {
       return apiResponse(
@@ -113,45 +210,46 @@ const createCustomer = async (req, res, next) => {
       );
     }
 
-    const customer = await User.create({
-      fullName,
-      email,
-      password,
-      aadhaarNumber,
-      role: 'customer',
-      photo: photo || '',
-      createdBy: req.user._id,
-    });
+    const customer =
+      await User.create({
+        fullName,
+        email,
+        password,
+        aadhaarNumber,
+        role: 'customer',
+        photo: photo || '',
+        createdBy: req.user._id,
+      });
 
-    const account = await Account.create({
-      userId: customer._id,
-      accountType: accountType || 'savings',
-      currency: 'INR',
-      balance: 0,
-    });
+    const account =
+      await Account.create({
+        userId: customer._id,
+        accountType:
+          accountType || 'savings',
+        currency: 'INR',
+        balance: 0,
+      });
 
     const depositAmount =
       Number(initialDeposit) || 0;
 
     if (depositAmount > 0) {
-      account.balance = depositAmount;
+      account.balance =
+        depositAmount;
 
       await account.save();
 
       await Transaction.create({
         type: 'deposit',
         amount: depositAmount,
-
-        receiverAccountId: account._id,
+        receiverAccountId:
+          account._id,
         receiverAccountNumber:
           account.accountNumber,
-
         balanceAfterTransaction:
           account.balance,
-
         description:
           'Initial account deposit',
-
         status: 'completed',
       });
     }
@@ -172,8 +270,103 @@ const createCustomer = async (req, res, next) => {
 
 /*
 =================================
+UPDATE CUSTOMER
+PUT /api/manager/customers/:id
+=================================
+*/
+const updateCustomer =
+  async (req, res, next) => {
+    try {
+      const {
+        fullName,
+        email,
+        aadhaarNumber,
+      } = req.body;
+
+      const customer =
+        await User.findOne({
+          _id: req.params.id,
+          role: 'customer',
+        });
+
+      if (!customer) {
+        return apiResponse(
+          res,
+          404,
+          'Customer not found.'
+        );
+      }
+
+      customer.fullName =
+        fullName ||
+        customer.fullName;
+
+      customer.email =
+        email || customer.email;
+
+      customer.aadhaarNumber =
+        aadhaarNumber ||
+        customer.aadhaarNumber;
+
+      await customer.save();
+
+      return apiResponse(
+        res,
+        200,
+        'Customer updated successfully.',
+        { customer }
+      );
+    } catch (error) {
+      next(error);
+    }
+  };
+
+/*
+=================================
+ACTIVATE / DEACTIVATE CUSTOMER
+PATCH /api/manager/customers/:id/status
+=================================
+*/
+const toggleCustomerStatus =
+  async (req, res, next) => {
+    try {
+      const customer =
+        await User.findOne({
+          _id: req.params.id,
+          role: 'customer',
+        });
+
+      if (!customer) {
+        return apiResponse(
+          res,
+          404,
+          'Customer not found.'
+        );
+      }
+
+      customer.isActive =
+        !customer.isActive;
+
+      await customer.save();
+
+      return apiResponse(
+        res,
+        200,
+        `Customer ${
+          customer.isActive
+            ? 'activated'
+            : 'deactivated'
+        } successfully.`,
+        { customer }
+      );
+    } catch (error) {
+      next(error);
+    }
+  };
+
+/*
+=================================
 GET EMPLOYEES
-GET /api/manager/employees
 =================================
 */
 const getEmployees = async (
@@ -182,19 +375,18 @@ const getEmployees = async (
   next
 ) => {
   try {
-    const employees = await User.find({
-      role: 'employee',
-    })
-      .select('-password')
-      .sort({ createdAt: -1 });
+    const employees =
+      await User.find({
+        role: 'employee',
+      })
+        .select('-password')
+        .sort({ createdAt: -1 });
 
     return apiResponse(
       res,
       200,
       'Employees retrieved.',
-      {
-        employees,
-      }
+      { employees }
     );
   } catch (error) {
     next(error);
@@ -204,7 +396,6 @@ const getEmployees = async (
 /*
 =================================
 GET CUSTOMERS
-GET /api/manager/customers
 =================================
 */
 const getCustomers = async (
@@ -213,24 +404,23 @@ const getCustomers = async (
   next
 ) => {
   try {
-    const customers = await User.find({
-      role: 'customer',
-    })
-      .select('-password')
-      .populate({
-        path: 'accounts',
-        select:
-          'accountNumber balance accountType isActive',
+    const customers =
+      await User.find({
+        role: 'customer',
       })
-      .sort({ createdAt: -1 });
+        .select('-password')
+        .populate({
+          path: 'accounts',
+          select:
+            'accountNumber balance accountType isActive',
+        })
+        .sort({ createdAt: -1 });
 
     return apiResponse(
       res,
       200,
       'Customers retrieved.',
-      {
-        customers,
-      }
+      { customers }
     );
   } catch (error) {
     next(error);
@@ -240,7 +430,6 @@ const getCustomers = async (
 /*
 =================================
 BANK SUMMARY
-GET /api/manager/summary
 =================================
 */
 const getSummary = async (
@@ -296,7 +485,13 @@ const getSummary = async (
 
 module.exports = {
   createEmployee,
+  updateEmployee,
+  toggleEmployeeStatus,
+
   createCustomer,
+  updateCustomer,
+  toggleCustomerStatus,
+
   getEmployees,
   getCustomers,
   getSummary,

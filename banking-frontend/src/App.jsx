@@ -8,12 +8,13 @@ import {
 
 import { AuthProvider } from "./context/AuthContext";
 
-import Navbar from "./components/Navbar";
 import PrivateRoute from "./components/PrivateRoute";
 import RoleRoute from "./components/RoleRoute";
+import Layout from "./components/Layout";
 
 import RoleSelection from "./pages/RoleSelection";
 import Login from "./pages/Login";
+import VerifyOTP from "./pages/VerifyOTP";
 
 /* MANAGER */
 import ManagerDashboard from "./pages/manager/ManagerDashboard";
@@ -45,8 +46,6 @@ export default function App() {
       <BrowserRouter>
         <Toaster position="top-right" />
 
-        <Navbar />
-
         <Routes>
           {/* PUBLIC */}
           <Route
@@ -59,130 +58,218 @@ export default function App() {
             element={<Login />}
           />
 
-          {/* PRIVATE */}
-          <Route element={<PrivateRoute />}>
+          <Route
+            path="/verify-otp"
+            element={<VerifyOTP />}
+          />
 
-            {/* MANAGER */}
-            <Route
-              element={
+          {/* MANAGER */}
+          <Route
+            path="/manager"
+            element={
+              <PrivateRoute>
                 <RoleRoute
                   allowedRoles={["manager"]}
-                />
-              }
-            >
-              <Route
-                path="/manager"
-                element={<ManagerDashboard />}
-              />
+                >
+                  <Layout>
+                    <ManagerDashboard />
+                  </Layout>
+                </RoleRoute>
+              </PrivateRoute>
+            }
+          />
 
-              <Route
-                path="/manager/employees"
-                element={<Employees />}
-              />
+          <Route
+            path="/manager/employees"
+            element={
+              <PrivateRoute>
+                <RoleRoute allowedRoles={["manager"]}>
+                  <Layout>
+                    <Employees />
+                  </Layout>
+                </RoleRoute>
+              </PrivateRoute>
+            }
+          />
 
-              <Route
-                path="/manager/customers"
-                element={<Customers />}
-              />
+          <Route
+            path="/manager/customers"
+            element={
+              <PrivateRoute>
+                <RoleRoute allowedRoles={["manager"]}>
+                  <Layout>
+                    <Customers />
+                  </Layout>
+                </RoleRoute>
+              </PrivateRoute>
+            }
+          />
 
-              <Route
-                path="/manager/create-employee"
-                element={<CreateEmployee />}
-              />
+          <Route
+            path="/manager/create-employee"
+            element={
+              <PrivateRoute>
+                <RoleRoute allowedRoles={["manager"]}>
+                  <Layout>
+                    <CreateEmployee />
+                  </Layout>
+                </RoleRoute>
+              </PrivateRoute>
+            }
+          />
 
-              <Route
-                path="/manager/create-customer"
-                element={<CreateCustomer />}
-              />
+          <Route
+            path="/manager/create-customer"
+            element={
+              <PrivateRoute>
+                <RoleRoute allowedRoles={["manager"]}>
+                  <Layout>
+                    <CreateCustomer />
+                  </Layout>
+                </RoleRoute>
+              </PrivateRoute>
+            }
+          />
 
-              <Route
-                path="/manager/bank-summary"
-                element={<BankSummary />}
-              />
+          <Route
+            path="/manager/bank-summary"
+            element={
+              <PrivateRoute>
+                <RoleRoute allowedRoles={["manager"]}>
+                  <Layout>
+                    <BankSummary />
+                  </Layout>
+                </RoleRoute>
+              </PrivateRoute>
+            }
+          />
 
-              {/* NEW */}
-              <Route
-                path="/manager/deposit"
-                element={<Deposit />}
-              />
+          {/* EMPLOYEE */}
+          <Route
+            path="/employee"
+            element={
+              <PrivateRoute>
+                <RoleRoute allowedRoles={["employee"]}>
+                  <Layout>
+                    <EmployeeDashboard />
+                  </Layout>
+                </RoleRoute>
+              </PrivateRoute>
+            }
+          />
 
-              <Route
-                path="/manager/withdraw"
-                element={<Withdraw />}
-              />
-            </Route>
+          <Route
+            path="/employee/customers"
+            element={
+              <PrivateRoute>
+                <RoleRoute allowedRoles={["employee"]}>
+                  <Layout>
+                    <CustomerList />
+                  </Layout>
+                </RoleRoute>
+              </PrivateRoute>
+            }
+          />
 
-            {/* EMPLOYEE */}
-            <Route
-              element={
-                <RoleRoute
-                  allowedRoles={["employee"]}
-                />
-              }
-            >
-              <Route
-                path="/employee"
-                element={<EmployeeDashboard />}
-              />
+          <Route
+            path="/employee/create-customer"
+            element={
+              <PrivateRoute>
+                <RoleRoute allowedRoles={["employee"]}>
+                  <Layout>
+                    <EmployeeCreateCustomer />
+                  </Layout>
+                </RoleRoute>
+              </PrivateRoute>
+            }
+          />
 
-              <Route
-                path="/employee/customers"
-                element={<CustomerList />}
-              />
+          <Route
+            path="/employee/profile"
+            element={
+              <PrivateRoute>
+                <RoleRoute allowedRoles={["employee"]}>
+                  <Layout>
+                    <EmployeeProfile />
+                  </Layout>
+                </RoleRoute>
+              </PrivateRoute>
+            }
+          />
 
-              <Route
-                path="/employee/create-customer"
-                element={<EmployeeCreateCustomer />}
-              />
+          {/* CUSTOMER */}
+          <Route
+            path="/customer"
+            element={
+              <PrivateRoute>
+                <RoleRoute allowedRoles={["customer"]}>
+                  <Layout>
+                    <CustomerDashboard />
+                  </Layout>
+                </RoleRoute>
+              </PrivateRoute>
+            }
+          />
 
-              <Route
-                path="/employee/profile"
-                element={<EmployeeProfile />}
-              />
+          <Route
+            path="/customer/accounts"
+            element={
+              <PrivateRoute>
+                <RoleRoute allowedRoles={["customer"]}>
+                  <Layout>
+                    <MyAccounts />
+                  </Layout>
+                </RoleRoute>
+              </PrivateRoute>
+            }
+          />
 
-              {/* NEW */}
-              <Route
-                path="/employee/deposit"
-                element={<Deposit />}
-              />
+          <Route
+            path="/customer/transactions"
+            element={
+              <PrivateRoute>
+                <RoleRoute allowedRoles={["customer"]}>
+                  <Layout>
+                    <MyTransactions />
+                  </Layout>
+                </RoleRoute>
+              </PrivateRoute>
+            }
+          />
 
-              <Route
-                path="/employee/withdraw"
-                element={<Withdraw />}
-              />
-            </Route>
+          <Route
+            path="/customer/profile"
+            element={
+              <PrivateRoute>
+                <RoleRoute allowedRoles={["customer"]}>
+                  <Layout>
+                    <CustomerProfile />
+                  </Layout>
+                </RoleRoute>
+              </PrivateRoute>
+            }
+          />
 
-            {/* CUSTOMER */}
-            <Route
-              element={
-                <RoleRoute
-                  allowedRoles={["customer"]}
-                />
-              }
-            >
-              <Route
-                path="/customer"
-                element={<CustomerDashboard />}
-              />
+          {/* TRANSACTIONS */}
+          <Route
+            path="/deposit"
+            element={
+              <PrivateRoute>
+                <Deposit />
+              </PrivateRoute>
+            }
+          />
 
-              <Route
-                path="/customer/accounts"
-                element={<MyAccounts />}
-              />
+          <Route
+            path="/withdraw"
+            element={
+              <PrivateRoute>
+                <Withdraw />
+              </PrivateRoute>
+            }
+          />
 
-              <Route
-                path="/customer/transactions"
-                element={<MyTransactions />}
-              />
-
-              <Route
-                path="/customer/profile"
-                element={<CustomerProfile />}
-              />
-            </Route>
-          </Route>
-
-          {/* FALLBACK */}
+          {/* 404 */}
           <Route
             path="*"
             element={<Navigate to="/" />}

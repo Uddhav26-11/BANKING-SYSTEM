@@ -1,7 +1,5 @@
 require('dotenv').config();
 
-const mongoose = require('mongoose');
-
 const connectDB = require('./src/config/database');
 const User = require('./src/models/User');
 
@@ -10,28 +8,50 @@ const seedManager = async () => {
     await connectDB();
 
     const existingManager = await User.findOne({
-      email: 'manager@bandhan.com',
+      email: 'uddhavchourasiya123@gmail.com',
     });
 
     if (existingManager) {
       console.log('⚠️ Manager already exists.');
+      console.log(
+        'Email:',
+        existingManager.email
+      );
+
       process.exit(0);
     }
 
     const manager = await User.create({
       fullName: 'Main Manager',
-      email: 'manager@bandhan.com',
-      password: 'Manager@123',
+
+      email:
+        'uddhavchourasiya123@gmail.com',
+
+      password: 'Uddhav@123',
+
       role: 'manager',
     });
 
-    console.log('✅ Manager created successfully.');
-    console.log('Email:', manager.email);
-    console.log('Password: Manager@123');
+    console.log(
+      '✅ Manager created successfully.'
+    );
+
+    console.log(
+      'Email:',
+      manager.email
+    );
+
+    console.log(
+      'Password: Uddhav@123'
+    );
 
     process.exit(0);
   } catch (error) {
-    console.error('❌ Error seeding manager:', error);
+    console.error(
+      '❌ Error seeding manager:',
+      error
+    );
+
     process.exit(1);
   }
 };

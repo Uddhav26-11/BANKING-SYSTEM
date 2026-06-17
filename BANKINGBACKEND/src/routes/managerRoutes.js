@@ -1,9 +1,16 @@
+console.log("🔥 MANAGER ROUTES LOADED");
 const express = require('express');
 const router = express.Router();
 
 const {
   createEmployee,
+  updateEmployee,
+  toggleEmployeeStatus,
+
   createCustomer,
+  updateCustomer,
+  toggleCustomerStatus,
+
   getEmployees,
   getCustomers,
   getSummary,
@@ -41,6 +48,18 @@ router.get(
   getEmployees
 );
 
+// Update Employee
+router.put(
+  '/employees/:id',
+  updateEmployee
+);
+
+// Activate / Deactivate Employee
+router.patch(
+  '/employees/:id/status',
+  toggleEmployeeStatus
+);
+
 /*
 =================================
 CUSTOMERS
@@ -57,6 +76,18 @@ router.post(
 router.get(
   '/customers',
   getCustomers
+);
+
+// Update Customer
+router.put(
+  '/customers/:id',
+  updateCustomer
+);
+
+// Activate / Deactivate Customer
+router.patch(
+  '/customers/:id/status',
+  toggleCustomerStatus
 );
 
 /*

@@ -1,72 +1,36 @@
-import { Link } from "react-router-dom";
-
 export default function ManagerDashboard() {
   return (
-    <div className="page-container">
-      <h1>Manager Dashboard</h1>
+    <div className="dashboard-home">
+      <div className="welcome-card">
+        <h1>🏦 Welcome to BANDHAN BANK</h1>
 
-      <p>
-        Welcome to Bandhan Bank Manager Panel
-      </p>
+        <p>
+          Manage employees, customers, and banking
+          operations securely through the sidebar.
+        </p>
 
-      <div className="dashboard-cards">
+        <div className="welcome-info">
+          <div className="info-box">
+            <h3>🔐 Secure Banking</h3>
+            <p>
+              Your trusted banking management system.
+            </p>
+          </div>
 
-        <Link
-          to="/manager/bank-summary"
-          className="card"
-        >
-          <h2>🏦Bank Summary</h2>
-          <p>View bank statistics</p>
-        </Link>
+          <div className="info-box">
+            <h3>⚡ Fast Operations</h3>
+            <p>
+              Access all features quickly using the sidebar.
+            </p>
+          </div>
 
-        <Link
-          to="/manager/create-employee"
-          className="card"
-        >
-          <h2>👨‍💼Create Employee</h2>
-          <p>Add new employees</p>
-        </Link>
-
-        <Link
-          to="/manager/create-customer"
-          className="card"
-        >
-          <h2>👤Create Customer</h2>
-          <p>Open customer accounts</p>
-        </Link>
-
-        <Link
-          to="/manager/employees"
-          className="card"
-        >
-          <h2>👥Employees</h2>
-          <p>View all employees</p>
-        </Link>
-
-        <Link
-          to="/manager/customers"
-          className="card"
-        >
-          <h2>🧑‍🤝‍🧑Customers</h2>
-          <p>View all customers</p>
-        </Link>
-
-        <Link
-          to="/manager/deposit"
-          className="card"
-        >
-          <h2>💰Deposit</h2>
-          <p>Deposit money into accounts</p>
-        </Link>
-
-        <Link
-          to="/manager/withdraw"
-          className="card"
-        >
-          <h2>💸Withdraw</h2>
-          <p>Withdraw money from accounts</p>
-        </Link>
-
+          <div className="info-box">
+            <h3>📊 Smart Management</h3>
+            <p>
+              Monitor employees and customers efficiently.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

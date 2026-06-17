@@ -1,11 +1,15 @@
 import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+
+import {
+  useNavigate,
+  useParams,
+} from "react-router-dom";
+
 import API from "../api/axios";
-import { useAuth } from "../context/AuthContext";
 
 export default function Login() {
-  const { login } = useAuth();
   const navigate = useNavigate();
+
   const { role } = useParams();
 
   const [form, setForm] = useState({
@@ -13,83 +17,156 @@ export default function Login() {
     password: "",
   });
 
-  const [error, setError] = useState("");
+  const [error, setError] =
+    useState("");
+
+  const [loading, setLoading] =
+    useState(false);
+
+  const [showPassword, setShowPassword] =
+    useState(false);
 
   const handleChange = (e) => {
     setForm({
       ...form,
-      [e.target.name]: e.target.value,
+
+      [e.target.name]:
+        e.target.value,
     });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
+  const handleSubmit =
+    async (e) => {
+      e.preventDefault();
 
-    try {
-      const res = await API.post("/auth/login", {
-        ...form,
-        role,
-      });
+      setError("");
 
-      const user = res.data.data.user;
-      const token = res.data.data.token;
+      setLoading(true);
 
-      login(user, token);
+      try {
+        const res =
+          await API.post(
+            "/auth/login",
+            {
+              ...form,
+              role,
+            }
+          );
 
-      if (user.role === "manager") {
-        navigate("/manager");
-      } else if (user.role === "employee") {
-        navigate("/employee");
-      } else {
-        navigate("/customer");
+        /*
+        OTP sent successfully
+        */
+
+        navigate(
+          "/verify-otp",
+          {
+            state: {
+              email:
+                res.data.data
+                  .email,
+
+              role,
+            },
+          }
+        );
+      } catch (err) {
+        setError(
+          err.response?.data
+            ?.message ||
+            "Login failed"
+        );
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      setError(
-        err.response?.data?.message ||
-        "Login failed"
-      );
-    }
-  };
+    };
 
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <h2>
+
+        <h1 className="login-role">
           {role
-            ? `${role.toUpperCase()} Sign In`
-            : "Sign In"}
+            ? role.toUpperCase()
+            : "LOGIN"}
+        </h1>
+
+        <h2 className="login-heading">
+          Sign In
         </h2>
 
-        <p className="login-subtitle">
-          Access your secure banking portal
-        </p>
-
         {error && (
-          <p className="error">{error}</p>
+          <p className="error">
+            {error}
+          </p>
         )}
 
-        <form onSubmit={handleSubmit}>
+        <form
+          onSubmit={
+            handleSubmit
+          }
+        >
+          <label className="input-label">
+            Email
+          </label>
+
           <input
             type="email"
             name="email"
             placeholder="Enter Email Address"
-            value={form.email}
-            onChange={handleChange}
+            value={
+              form.email
+            }
+            onChange={
+              handleChange
+            }
             required
           />
 
-          <input
-            type="password"
-            name="password"
-            placeholder="Enter Password"
-            value={form.password}
-            onChange={handleChange}
-            required
-          />
+          <label className="input-label">
+            Password
+          </label>
 
-          <button type="submit">
-            Login
+          <div className="password-wrapper">
+            <input
+              type={
+                showPassword
+                  ? "text"
+                  : "password"
+              }
+              name="password"
+              placeholder="Enter Password"
+              value={
+                form.password
+              }
+              onChange={
+                handleChange
+              }
+              required
+            />
+
+            <span
+              className="toggle-password"
+              onClick={() =>
+                setShowPassword(
+                  !showPassword
+                )
+              }
+            >
+              {showPassword
+                ? "🙈"
+                : "👁"}
+            </span>
+          </div>
+
+          <button
+            type="submit"
+            disabled={
+              loading
+            }
+          >
+            {loading
+              ? "Sending OTP..."
+              : "Login"}
           </button>
         </form>
       </div>

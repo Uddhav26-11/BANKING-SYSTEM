@@ -1,10 +1,9 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "https://banking-system-3-20xm.onrender.com/api",
+  baseURL: "http://localhost:5000/api",
 });
 
-// Attach JWT token to every request automatically
 API.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
 
