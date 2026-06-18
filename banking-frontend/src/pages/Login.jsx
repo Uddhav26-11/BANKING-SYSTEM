@@ -29,7 +29,6 @@ export default function Login() {
   const handleChange = (e) => {
     setForm({
       ...form,
-
       [e.target.name]:
         e.target.value,
     });
@@ -40,7 +39,6 @@ export default function Login() {
       e.preventDefault();
 
       setError("");
-
       setLoading(true);
 
       try {
@@ -52,10 +50,6 @@ export default function Login() {
               role,
             }
           );
-
-        /*
-        OTP sent successfully
-        */
 
         navigate(
           "/verify-otp",
@@ -83,7 +77,6 @@ export default function Login() {
   return (
     <div className="auth-page">
       <div className="auth-card">
-
         <h1 className="login-role">
           {role
             ? role.toUpperCase()

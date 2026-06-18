@@ -12,14 +12,25 @@ const seedManager = async () => {
     });
 
     if (existingManager) {
-      console.log('⚠️ Manager already exists.');
-      console.log(
-        'Email:',
-        existingManager.email
-      );
+  existingManager.password = 'Uddhav@123';
 
-      process.exit(0);
-    }
+  await existingManager.save();
+
+  console.log(
+    '✅ Manager password reset successfully.'
+  );
+
+  console.log(
+    'Email:',
+    existingManager.email
+  );
+
+  console.log(
+    'Password: Uddhav@123'
+  );
+
+  process.exit(0);
+}
 
     const manager = await User.create({
       fullName: 'Main Manager',

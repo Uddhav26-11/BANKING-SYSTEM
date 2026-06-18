@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   useLocation,
   useNavigate,
@@ -27,10 +27,11 @@ export default function VerifyOTP() {
   const [loading, setLoading] =
     useState(false);
 
-  if (!email) {
-    navigate("/");
-    return null;
-  }
+  useEffect(() => {
+    if (!email) {
+      navigate("/");
+    }
+  }, [email, navigate]);
 
   const handleSubmit =
     async (e) => {
@@ -58,13 +59,11 @@ export default function VerifyOTP() {
         login(user, token);
 
         if (
-          user.role ===
-          "manager"
+          user.role === "manager"
         ) {
           navigate("/manager");
         } else if (
-          user.role ===
-          "employee"
+          user.role === "employee"
         ) {
           navigate("/employee");
         } else {
@@ -84,16 +83,12 @@ export default function VerifyOTP() {
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <h2>
-          Verify OTP
-        </h2>
+        <h2>Verify OTP</h2>
 
         <p>
           OTP sent to:
           <br />
-          <strong>
-            {email}
-          </strong>
+          <strong>{email}</strong>
         </p>
 
         {error && (
@@ -122,9 +117,7 @@ export default function VerifyOTP() {
 
           <button
             type="submit"
-            disabled={
-              loading
-            }
+            disabled={loading}
           >
             {loading
               ? "Verifying..."

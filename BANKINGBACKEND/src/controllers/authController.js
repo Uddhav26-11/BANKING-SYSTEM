@@ -1,24 +1,23 @@
-const User = require('../models/User');
-const otpGenerator = require('otp-generator');
+const User = require("../models/User");
+const otpGenerator = require("otp-generator");
 
 const {
   generateToken,
   apiResponse,
-} = require('../utils/helpers');
+} = require("../utils/helpers");
 
-const sendEmail = require('../utils/sendEmail');
+const sendEmail = require("../utils/sendEmail");
 
 /*
 ==========================
 POST /api/auth/register
 ==========================
-Public registration disabled
 */
 const register = async (req, res) => {
   return apiResponse(
     res,
     403,
-    'Self registration is disabled. Please contact the bank.'
+    "Self registration is disabled. Please contact the bank."
   );
 };
 
@@ -26,7 +25,8 @@ const register = async (req, res) => {
 ==========================
 POST /api/auth/login
 ==========================
-Send OTP instead of JWT
+SEND OTP
+==========================
 */
 const login = async (
   req,
@@ -44,23 +44,20 @@ const login = async (
       return apiResponse(
         res,
         400,
-        'Email and password are required.'
+        "Email and password are required."
       );
     }
 
     const user =
       await User.findOne({
-        email:
-          email.toLowerCase(),
-      }).select(
-        '+password'
-      );
+        email: email.toLowerCase(),
+      }).select("+password");
 
     if (!user) {
       return apiResponse(
         res,
         401,
-        'Invalid email or password.'
+        "Invalid email or password."
       );
     }
 
@@ -73,7 +70,7 @@ const login = async (
       return apiResponse(
         res,
         401,
-        'Invalid email or password.'
+        "Invalid email or password."
       );
     }
 
@@ -81,13 +78,10 @@ const login = async (
       return apiResponse(
         res,
         403,
-        'Your account has been deactivated.'
+        "Your account has been deactivated."
       );
     }
 
-    /*
-    Prevent wrong role login
-    */
     if (
       role &&
       user.role !== role
@@ -100,28 +94,19 @@ const login = async (
     }
 
     /*
-    Generate 6-digit OTP
+    Generate OTP
     */
     const otp =
       otpGenerator.generate(
         6,
         {
-          upperCaseAlphabets:
-            false,
-
-          lowerCaseAlphabets:
-            false,
-
-          specialChars:
-            false,
-
+          upperCaseAlphabets: false,
+          lowerCaseAlphabets: false,
+          specialChars: false,
           alphabets: false,
         }
       );
 
-    /*
-    Save OTP for 5 minutes
-    */
     user.otp = otp;
 
     user.otpExpires =
@@ -131,33 +116,29 @@ const login = async (
       );
 
     await user.save({
-      validateBeforeSave:
-        false,
+      validateBeforeSave: false,
     });
+
+    console.log(
+      "OTP GENERATED:",
+      otp
+    );
 
     /*
     Send OTP Email
     */
     await sendEmail(
       user.email,
-
-      'Bandhan Bank Login OTP',
-
+      "Bandhan Bank Login OTP",
       `
       <div style="font-family:Arial;padding:20px;">
         <h2>Bandhan Bank</h2>
 
-        <p>
-          Dear ${user.fullName},
-        </p>
+        <p>Dear ${user.fullName},</p>
 
-        <p>
-          Your OTP for login is:
-        </p>
+        <p>Your OTP for login is:</p>
 
-        <h1>
-          ${otp}
-        </h1>
+        <h1>${otp}</h1>
 
         <p>
           This OTP is valid for 5 minutes.
@@ -173,15 +154,21 @@ const login = async (
     return apiResponse(
       res,
       200,
-      'OTP sent successfully.',
+      "OTP sent successfully.",
       {
         email: user.email,
       }
     );
   } catch (error) {
+    console.error(
+      "LOGIN ERROR:",
+      error
+    );
+
     next(error);
   }
 };
+
 /*
 ==========================
 POST /api/auth/verify-otp
@@ -202,21 +189,20 @@ const verifyOTP = async (
       return apiResponse(
         res,
         400,
-        'Email and OTP are required.'
+        "Email and OTP are required."
       );
     }
 
     const user =
       await User.findOne({
-        email:
-          email.toLowerCase(),
+        email: email.toLowerCase(),
       });
 
     if (!user) {
       return apiResponse(
         res,
         404,
-        'User not found.'
+        "User not found."
       );
     }
 
@@ -227,7 +213,7 @@ const verifyOTP = async (
       return apiResponse(
         res,
         401,
-        'Invalid OTP.'
+        "Invalid OTP."
       );
     }
 
@@ -239,7 +225,7 @@ const verifyOTP = async (
       return apiResponse(
         res,
         401,
-        'OTP has expired.'
+        "OTP has expired."
       );
     }
 
@@ -247,16 +233,12 @@ const verifyOTP = async (
     Clear OTP
     */
     user.otp = null;
-
-    user.otpExpires =
-      null;
-
+    user.otpExpires = null;
     user.lastLogin =
       new Date();
 
     await user.save({
-      validateBeforeSave:
-        false,
+      validateBeforeSave: false,
     });
 
     /*
@@ -271,7 +253,7 @@ const verifyOTP = async (
     return apiResponse(
       res,
       200,
-      'OTP verified successfully.',
+      "OTP verified successfully.",
       {
         token,
         user,
@@ -296,25 +278,16 @@ const resendOTP = async (
     const { email } =
       req.body;
 
-    if (!email) {
-      return apiResponse(
-        res,
-        400,
-        'Email is required.'
-      );
-    }
-
     const user =
       await User.findOne({
-        email:
-          email.toLowerCase(),
+        email: email.toLowerCase(),
       });
 
     if (!user) {
       return apiResponse(
         res,
         404,
-        'User not found.'
+        "User not found."
       );
     }
 
@@ -322,17 +295,10 @@ const resendOTP = async (
       otpGenerator.generate(
         6,
         {
-          upperCaseAlphabets:
-            false,
-
-          lowerCaseAlphabets:
-            false,
-
-          specialChars:
-            false,
-
-          alphabets:
-            false,
+          upperCaseAlphabets: false,
+          lowerCaseAlphabets: false,
+          specialChars: false,
+          alphabets: false,
         }
       );
 
@@ -345,42 +311,19 @@ const resendOTP = async (
       );
 
     await user.save({
-      validateBeforeSave:
-        false,
+      validateBeforeSave: false,
     });
 
     await sendEmail(
       user.email,
-
-      'Bandhan Bank Login OTP',
-
-      `
-      <div style="font-family:Arial;padding:20px;">
-        <h2>Bandhan Bank</h2>
-
-        <p>
-          Dear ${user.fullName},
-        </p>
-
-        <p>
-          Your new OTP is:
-        </p>
-
-        <h1>
-          ${otp}
-        </h1>
-
-        <p>
-          This OTP is valid for 5 minutes.
-        </p>
-      </div>
-      `
+      "Bandhan Bank Login OTP",
+      `<h2>Your new OTP is: ${otp}</h2>`
     );
 
     return apiResponse(
       res,
       200,
-      'OTP resent successfully.'
+      "OTP resent successfully."
     );
   } catch (error) {
     next(error);
@@ -402,13 +345,13 @@ const getMe = async (
       await User.findById(
         req.user._id
       ).populate(
-        'accounts'
+        "accounts"
       );
 
     return apiResponse(
       res,
       200,
-      'Profile retrieved.',
+      "Profile retrieved.",
       {
         user,
       }
@@ -420,12 +363,8 @@ const getMe = async (
 
 module.exports = {
   register,
-
   login,
-
   verifyOTP,
-
   resendOTP,
-
   getMe,
 };
